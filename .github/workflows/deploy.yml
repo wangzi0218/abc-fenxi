@@ -1,0 +1,72 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint --max-warnings 0
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Build
+        run: pnpm build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL || 'https://api.example.com' }}
+          VITE_DATA_SOURCE: ${{ secrets.VITE_DATA_SOURCE || 'aliyun' }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ai-stats-dashboard
+          directory: dist
+          productionBranch: main
+          wranglerVersion: '3'
+
+  # 可选：通知部署状态
+  notify-deployment:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment Status
+        run: |
+          if [ "${{ needs.build-and-deploy.result }}" = "success" ]; then
+            echo "✅ 部署成功！"
+            echo "📍 访问地址：https://ai-stats-dashboard.pages.dev"
+          else
+            echo "❌ 部署失败！"
+            exit 1
+          fi
