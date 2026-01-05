@@ -37,8 +37,11 @@ function generateMetricsForDate(date: string, moduleCode: string): DailyMetric[]
       { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: getRandomInt(150, 300), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '开放门店占比', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: getRandomInt(100, 250), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '活跃门店占比', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '深度门店数', metricDate: date, metricValue: getRandomInt(50, 150), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '平均识别正确率', metricDate: date, metricValue: getRandomInt(80, 99), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '平均商品匹配正确率', metricDate: date, metricValue: getRandomInt(75, 95), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '照片确认转化率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '完成入库转化率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' }
     );
   } else if (moduleCode === 'ai_diagnosis') {
@@ -48,6 +51,17 @@ function generateMetricsForDate(date: string, moduleCode: string): DailyMetric[]
       { moduleCode, metricName: '诊所活跃率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '医生活跃率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '采纳率', metricDate: date, metricValue: getRandomInt(60, 95), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '日使用-连续3天使用医生数', metricDate: date, metricValue: getRandomInt(50, 150), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '日使用-人均次数', metricDate: date, metricValue: getRandomInt(2, 10), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-诊断/辩证采纳', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-中西成药采纳', metricDate: date, metricValue: getRandomInt(100, 500), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-中药采纳', metricDate: date, metricValue: getRandomInt(100, 400), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-外治采纳', metricDate: date, metricValue: getRandomInt(20, 100), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '药品匹配率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '治疗模型切换统计-中医', metricDate: date, metricValue: getRandomInt(50, 200), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '治疗模型切换统计-西医', metricDate: date, metricValue: getRandomInt(100, 300), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '开放用户数', metricDate: date, metricValue: getRandomInt(1000, 2000), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '开放用户占比', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: 'Token消耗', metricDate: date, metricValue: getRandomTokenConsumption(), metricUnit: '万', dimensionType: 'none' }
     );
   } else if (moduleCode === 'voice_records') {
@@ -65,6 +79,27 @@ function generateMetricsForDate(date: string, moduleCode: string): DailyMetric[]
       { moduleCode, metricName: '日使用医生数', metricDate: date, metricValue: getRandomInt(300, 600), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '采纳次数', metricDate: date, metricValue: getRandomInt(500, 1500), metricUnit: '次', dimensionType: 'none' },
       { moduleCode, metricName: '采纳率', metricDate: date, metricValue: getRandomInt(60, 90), metricUnit: '%', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'pre_consultation') {
+    metrics.push(
+      { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: getRandomInt(100, 200), metricUnit: '个', dimensionType: 'none' },
+      { moduleCode, metricName: '开方用户数', metricDate: date, metricValue: getRandomInt(200, 500), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: getRandomInt(80, 150), metricUnit: '个', dimensionType: 'none' },
+      { moduleCode, metricName: '完成转化率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '每日触发预问诊数', metricDate: date, metricValue: getRandomInt(500, 1000), metricUnit: '次', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'test_recommendation') {
+    metrics.push(
+      { moduleCode, metricName: '使用医生数', metricDate: date, metricValue: getRandomInt(100, 300), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '推荐次数', metricDate: date, metricValue: getRandomInt(1000, 2000), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '开出推荐项目次数', metricDate: date, metricValue: getRandomInt(300, 800), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '推荐开出率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'test_interpretation') {
+    metrics.push(
+      { moduleCode, metricName: '分析报告数量', metricDate: date, metricValue: getRandomInt(200, 500), metricUnit: '份', dimensionType: 'none' },
+      { moduleCode, metricName: '查看报告详情次数', metricDate: date, metricValue: getRandomInt(150, 400), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '查看率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' }
     );
   }
 
@@ -129,8 +164,11 @@ function generateStaticMetricsForDate(date: string, moduleCode: string, mockFn: 
       { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: Math.round(mockFn(200)), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '开放门店占比', metricDate: date, metricValue: Math.round(mockFn(85)), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: Math.round(mockFn(180)), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃率', metricDate: date, metricValue: Math.round(mockFn(90)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '活跃门店占比', metricDate: date, metricValue: Math.round(mockFn(90)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '深度门店数', metricDate: date, metricValue: Math.round(mockFn(80)), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '平均识别正确率', metricDate: date, metricValue: Math.round(mockFn(95)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '平均商品匹配正确率', metricDate: date, metricValue: Math.round(mockFn(88)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '照片确认转化率', metricDate: date, metricValue: Math.round(mockFn(82)), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '完成入库转化率', metricDate: date, metricValue: Math.round(mockFn(70)), metricUnit: '%', dimensionType: 'none' }
     );
   } else if (moduleCode === 'ai_diagnosis') {
@@ -140,6 +178,17 @@ function generateStaticMetricsForDate(date: string, moduleCode: string, mockFn: 
       { moduleCode, metricName: '诊所活跃率', metricDate: date, metricValue: Math.round(mockFn(75)), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '医生活跃率', metricDate: date, metricValue: Math.round(mockFn(65)), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: '采纳率', metricDate: date, metricValue: Math.round(mockFn(82)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '日使用-连续3天使用医生数', metricDate: date, metricValue: Math.round(mockFn(100)), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '日使用-人均次数', metricDate: date, metricValue: Math.round(mockFn(5)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-诊断/辩证采纳', metricDate: date, metricValue: Math.round(mockFn(80)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-中西成药采纳', metricDate: date, metricValue: Math.round(mockFn(300)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-中药采纳', metricDate: date, metricValue: Math.round(mockFn(200)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '采纳情况-外治采纳', metricDate: date, metricValue: Math.round(mockFn(60)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '药品匹配率', metricDate: date, metricValue: Math.round(mockFn(92)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '治疗模型切换统计-中医', metricDate: date, metricValue: Math.round(mockFn(120)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '治疗模型切换统计-西医', metricDate: date, metricValue: Math.round(mockFn(180)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '开放用户数', metricDate: date, metricValue: Math.round(mockFn(1500)), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '开放用户占比', metricDate: date, metricValue: Math.round(mockFn(95)), metricUnit: '%', dimensionType: 'none' },
       { moduleCode, metricName: 'Token消耗', metricDate: date, metricValue: Math.round(mockFn(120)), metricUnit: '万', dimensionType: 'none' }
     );
   } else if (moduleCode === 'voice_records') {
@@ -157,6 +206,27 @@ function generateStaticMetricsForDate(date: string, moduleCode: string, mockFn: 
       { moduleCode, metricName: '日使用医生数', metricDate: date, metricValue: Math.round(mockFn(450)), metricUnit: '个', dimensionType: 'none' },
       { moduleCode, metricName: '采纳次数', metricDate: date, metricValue: Math.round(mockFn(1200)), metricUnit: '次', dimensionType: 'none' },
       { moduleCode, metricName: '采纳率', metricDate: date, metricValue: Math.round(mockFn(78)), metricUnit: '%', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'pre_consultation') {
+    metrics.push(
+      { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: Math.round(mockFn(150)), metricUnit: '个', dimensionType: 'none' },
+      { moduleCode, metricName: '开方用户数', metricDate: date, metricValue: Math.round(mockFn(350)), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: Math.round(mockFn(120)), metricUnit: '个', dimensionType: 'none' },
+      { moduleCode, metricName: '完成转化率', metricDate: date, metricValue: Math.round(mockFn(65)), metricUnit: '%', dimensionType: 'none' },
+      { moduleCode, metricName: '每日触发预问诊数', metricDate: date, metricValue: Math.round(mockFn(800)), metricUnit: '次', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'test_recommendation') {
+    metrics.push(
+      { moduleCode, metricName: '使用医生数', metricDate: date, metricValue: Math.round(mockFn(200)), metricUnit: '人', dimensionType: 'none' },
+      { moduleCode, metricName: '推荐次数', metricDate: date, metricValue: Math.round(mockFn(1500)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '开出推荐项目次数', metricDate: date, metricValue: Math.round(mockFn(600)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '推荐开出率', metricDate: date, metricValue: Math.round(mockFn(40)), metricUnit: '%', dimensionType: 'none' }
+    );
+  } else if (moduleCode === 'test_interpretation') {
+    metrics.push(
+      { moduleCode, metricName: '分析报告数量', metricDate: date, metricValue: Math.round(mockFn(350)), metricUnit: '份', dimensionType: 'none' },
+      { moduleCode, metricName: '查看报告详情次数', metricDate: date, metricValue: Math.round(mockFn(280)), metricUnit: '次', dimensionType: 'none' },
+      { moduleCode, metricName: '查看率', metricDate: date, metricValue: Math.round(mockFn(80)), metricUnit: '%', dimensionType: 'none' }
     );
   }
   return metrics;
@@ -337,6 +407,30 @@ export function getMockFunnelData(moduleCode: string, startDate?: Date): FunnelD
         { step: 'AI 识别分析完成', count: Math.round(1275 * (1 - variance * 0.6)), rate: 0.85 - variance * 0.2 },
         { step: '生成舌诊分析报告', count: Math.round(1140 * (1 - variance * 0.9)), rate: 0.76 - variance * 0.3 },
         { step: '患者端/医生端查看', count: Math.round(960 * (1 - variance * 1.3)), rate: 0.64 - variance * 0.4 },
+      ],
+    },
+    pre_consultation: {
+      funnel: [
+        { step: '触发预问诊消息', count: 5000, rate: 1 },
+        { step: '患者进入预问诊', count: Math.round(3500 * (1 - variance * 0.3)), rate: 0.7 - variance * 0.1 },
+        { step: '完成预问诊对话', count: Math.round(2450 * (1 - variance * 0.8)), rate: 0.49 - variance * 0.3 },
+        { step: '同步至医生端', count: Math.round(2200 * (1 - variance * 1.1)), rate: 0.44 - variance * 0.4 },
+      ],
+    },
+    test_recommendation: {
+      funnel: [
+        { step: '触发推荐场景', count: 3000, rate: 1 },
+        { step: '展示推荐列表', count: Math.round(2850 * (1 - variance * 0.1)), rate: 0.95 - variance * 0.05 },
+        { step: '选中推荐项目', count: Math.round(1500 * (1 - variance * 0.5)), rate: 0.5 - variance * 0.2 },
+        { step: '开入处方/检验单', count: Math.round(1200 * (1 - variance * 0.8)), rate: 0.4 - variance * 0.3 },
+      ],
+    },
+    test_interpretation: {
+      funnel: [
+        { step: '报告上传/同步', count: 1000, rate: 1 },
+        { step: 'AI 分析完成', count: Math.round(980 * (1 - variance * 0.05)), rate: 0.98 - variance * 0.02 },
+        { step: '查看解读结果', count: Math.round(800 * (1 - variance * 0.4)), rate: 0.8 - variance * 0.1 },
+        { step: '医生端确认并沟通', count: Math.round(650 * (1 - variance * 0.7)), rate: 0.65 - variance * 0.2 },
       ],
     },
   };
