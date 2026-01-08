@@ -150,6 +150,7 @@ export const ProvinceHeatmap: React.FC<ProvinceHeatmapProps> = ({
         {
           name: title,
           type: 'map',
+          map: 'china',
           geoIndex: 0,
           data: heatmapData,
         },

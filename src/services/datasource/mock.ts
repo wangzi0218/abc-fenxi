@@ -112,9 +112,9 @@ export class MockDataSource implements IDataSource {
    * 获取省份维度的数据（用于地图展示和省份对比）
    */
   async fetchProvinceData(
-    moduleCode: string,
-    startDate: Date,
-    endDate: Date
+    _moduleCode: string,
+    _startDate: Date,
+    _endDate: Date
   ): Promise<Array<{ province: string; value: number; percentage: number }>> {
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
     return getMockProvinceData();
@@ -124,7 +124,7 @@ export class MockDataSource implements IDataSource {
    * 获取特定省份的时间序列数据（用于热力图趋势）
    */
   async fetchProvinceTimeSeries(
-    moduleCode: string,
+    _moduleCode: string,
     province: string,
     startDate: Date,
     endDate: Date
