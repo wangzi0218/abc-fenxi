@@ -117,7 +117,7 @@ export class MockDataSource implements IDataSource {
     endDate: Date
   ): Promise<Array<{ province: string; value: number; percentage: number }>> {
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-    return getMockProvinceData(moduleCode, startDate, endDate);
+    return getMockProvinceData();
   }
 
   /**
@@ -130,7 +130,7 @@ export class MockDataSource implements IDataSource {
     endDate: Date
   ): Promise<Array<{ date: string; value: number }>> {
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-    return getMockProvinceTimeSeries(moduleCode, province, startDate, endDate);
+    return getMockProvinceTimeSeries(province, startDate, endDate);
   }
 
   /**

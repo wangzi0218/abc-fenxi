@@ -73,10 +73,7 @@ export const ProvinceHeatmap: React.FC<ProvinceHeatmapProps> = ({
     // 转换数据格式
     const heatmapData = data.map(item => ({
       name: PROVINCE_NAME_MAP[item.province] || item.province,
-      value: item.value,
-      itemStyle: {
-        areaColor: item.value > 0 ? undefined : '#f0f0f0',
-      },
+      value: item.value
     }));
 
     // 计算对标数据（如果有）
@@ -151,26 +148,10 @@ export const ProvinceHeatmap: React.FC<ProvinceHeatmapProps> = ({
       },
       series: [
         {
-          type: 'effectScatter',
+          name: title,
+          type: 'map',
           geoIndex: 0,
           data: heatmapData,
-          symbolSize: 8,
-          showEffectOn: 'render',
-          rippleEffect: {
-            brushType: 'stroke',
-          },
-          hoverAnimation: true,
-          label: {
-            formatter: '{b}',
-            position: 'top',
-            show: false,
-          },
-          itemStyle: {
-            color: '#0066CC',
-            shadowBlur: 10,
-            shadowColor: '#333',
-          },
-          zlevel: 1,
         },
       ],
     };
