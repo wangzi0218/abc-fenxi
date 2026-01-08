@@ -232,14 +232,14 @@ function DashboardPage() {
                   type="date"
                   value={dayjs(dateRange.startDate).format('YYYY-MM-DD')}
                   onChange={(e) => setDateRange(dayjs(e.target.value).toDate(), dateRange.endDate)}
-                  className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
                 <span className="text-gray-400">-</span>
                 <input
                   type="date"
                   value={dayjs(dateRange.endDate).format('YYYY-MM-DD')}
                   onChange={(e) => setDateRange(dateRange.startDate, dayjs(e.target.value).toDate())}
-                  className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
