@@ -116,7 +116,7 @@ export const MetricsTimePivotTable: React.FC<MetricsTimePivotTableProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b-2 border-gray-200 bg-gray-50/50">
+            <tr className="border-b-2 border-gray-200 bg-gray-50/50 hover:bg-gray-50/50">
               <th className="text-left py-4 px-4 font-bold text-gray-600 sticky left-0 bg-gray-50/50 z-10 min-w-[160px]">
                 指标名称
               </th>
@@ -124,7 +124,7 @@ export const MetricsTimePivotTable: React.FC<MetricsTimePivotTableProps> = ({
               {sortedDates.map(date => (
                 <th 
                   key={date} 
-                  className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[80px] bg-blue-50/30"
+                  className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[80px] bg-blue-50/30 hover:bg-blue-50/30"
                 >
                   <div className="font-bold text-gray-700">{dayjs(date).format('MM-DD')}</div>
                   <div className="text-[10px] text-gray-400 font-normal">
@@ -132,10 +132,10 @@ export const MetricsTimePivotTable: React.FC<MetricsTimePivotTableProps> = ({
                   </div>
                 </th>
               ))}
-              <th className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[100px]">
+              <th className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[100px] bg-gray-50/50 hover:bg-gray-50/50">
                 周期平均
               </th>
-              <th className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[100px]">
+              <th className="text-center py-4 px-3 font-bold text-gray-600 text-xs min-w-[100px] bg-gray-50/50 hover:bg-gray-50/50">
                 峰值/谷值
               </th>
             </tr>
