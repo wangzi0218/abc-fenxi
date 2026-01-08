@@ -131,19 +131,9 @@ export const ProvinceHeatmap: React.FC<ProvinceHeatmapProps> = ({
       geo: {
         map: 'china',
         roam: true,
-        label: {
-          emphasis: {
-            show: true,
-          },
-        },
         itemStyle: {
-          normal: {
-            areaColor: '#f3f3f3',
-            borderColor: '#999',
-          },
-          emphasis: {
-            areaColor: '#e0e7ff',
-          },
+          areaColor: '#f3f3f3',
+          borderColor: '#999',
         },
       },
       visualMap: {
@@ -161,19 +151,26 @@ export const ProvinceHeatmap: React.FC<ProvinceHeatmapProps> = ({
       },
       series: [
         {
-          type: 'map',
+          type: 'effectScatter',
           geoIndex: 0,
           data: heatmapData,
-          symbolSize: ['100%', '100%'],
-          showLegendSymbol: false,
-          itemStyle: {
-            emphasis: {
-              shadowOffsetX: 0,
-              shadowOffsetY: 0,
-              shadowBlur: 20,
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-            },
+          symbolSize: 8,
+          showEffectOn: 'render',
+          rippleEffect: {
+            brushType: 'stroke',
           },
+          hoverAnimation: true,
+          label: {
+            formatter: '{b}',
+            position: 'top',
+            show: false,
+          },
+          itemStyle: {
+            color: '#0066CC',
+            shadowBlur: 10,
+            shadowColor: '#333',
+          },
+          zlevel: 1,
         },
       ],
     };

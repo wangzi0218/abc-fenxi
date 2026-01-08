@@ -163,7 +163,7 @@ export const ProvinceComparison: React.FC<ProvinceComparisonProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {sortedByChange.map((item, idx) => {
+              {sortedByChange.map((item) => {
                 const isGrowth = item.changeRate >= 0;
                 const arrowClass = isGrowth ? 'text-green-700' : 'text-red-700';
                 const arrow = isGrowth ? '↑' : '↓';

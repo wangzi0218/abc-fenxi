@@ -494,9 +494,9 @@ const PROVINCES = [
  * @returns 省份维度的数据
  */
 export function getMockProvinceData(
-  moduleCode: string,
-  startDate: Date,
-  endDate: Date
+  _moduleCode: string,
+  _startDate: Date,
+  _endDate: Date
 ): Array<{ province: string; value: number; percentage: number }> {
   // 生成随机的省份分布数据
   // 模拟一线城市数据更多的现象
@@ -531,7 +531,7 @@ export function getMockProvinceData(
  * @returns 日期-数值对应的数据
  */
 export function getMockProvinceTimeSeries(
-  moduleCode: string,
+  _moduleCode: string,
   province: string,
   startDate: Date,
   endDate: Date
