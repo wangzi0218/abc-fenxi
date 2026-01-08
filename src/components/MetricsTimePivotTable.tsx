@@ -120,7 +120,7 @@ export const MetricsTimePivotTable: React.FC<MetricsTimePivotTableProps> = ({
               <th className="text-left py-4 px-4 font-bold text-gray-600 sticky left-0 bg-gray-50/50 z-10 min-w-[160px]">
                 指标名称
               </th>
-              <th className="text-center py-4 px-2 font-bold text-gray-400 text-xs">单位</th>
+              <th className="text-center py-4 px-2 font-bold text-gray-400 text-xs bg-gray-50/50">单位</th>
               {sortedDates.map(date => (
                 <th 
                   key={date} 

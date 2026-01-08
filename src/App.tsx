@@ -406,8 +406,8 @@ function DashboardPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="text-left border-b border-gray-100">
-                          <th className="py-4 px-4 text-sm font-bold text-gray-400 uppercase">关键指标</th>
+                        <tr className="text-left border-b border-gray-100 bg-gray-50/50">
+                          <th className="py-4 px-4 text-sm font-bold text-gray-400 uppercase bg-gray-50/50 sticky left-0 z-10">关键指标</th>
                           <th className="py-4 px-4 text-sm font-bold text-blue-600 text-center bg-blue-50/30">最新观测值</th>
                           <th className="py-4 px-4 text-sm font-bold text-green-600 text-center">周期平均</th>
                           <th className="py-4 px-4 text-sm font-bold text-purple-600 text-center">周期峰值</th>
