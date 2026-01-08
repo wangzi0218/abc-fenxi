@@ -24,6 +24,7 @@
     "@antv/g2": "^5.0.0",
     "@antv/s2": "^2.0.0",
     "recharts": "^2.10.0",
+    "echarts": "^5.4.3",
     "lucide-react": "^0.408.0"
   },
   "devDependencies": {

@@ -12,7 +12,7 @@ export interface DailyMetric {
   metricDate: string;
   metricValue: number;
   metricUnit: string;
-  dimensionType: 'none' | 'clinic' | 'doctor' | 'region';
+  dimensionType: 'none' | 'clinic' | 'doctor' | 'region' | 'segment';
   dimensionValue?: string;
   isPrediction?: boolean;
 }

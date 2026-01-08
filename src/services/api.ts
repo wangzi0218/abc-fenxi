@@ -169,6 +169,38 @@ export async function fetchModuleAverages(moduleCode: string): Promise<ApiRespon
 }
 
 /**
+ * 获取省份维度的数据（用于地图展示和省份对比）
+ * GET /api/v1/province/data/:module
+ */
+export async function fetchProvinceData(
+  moduleCode: string,
+  startDate: Date,
+  endDate: Date
+): Promise<ApiResponse<Array<{ province: string; value: number; percentage: number }>>> {
+  const data = await activeDataSource.fetchProvinceData(moduleCode, startDate, endDate);
+  return { code: 0, data };
+}
+
+/**
+ * 获取特定省份的时间序列数据（用于热力图趋势）
+ * GET /api/v1/province/timeseries/:module/:province
+ */
+export async function fetchProvinceTimeSeries(
+  moduleCode: string,
+  province: string,
+  startDate: Date,
+  endDate: Date
+): Promise<ApiResponse<Array<{ date: string; value: number }>>> {
+  const data = await activeDataSource.fetchProvinceTimeSeries(
+    moduleCode,
+    province,
+    startDate,
+    endDate
+  );
+  return { code: 0, data };
+}
+
+/**
  * 错误处理
  */
 export function handleApiError(error: unknown): string {

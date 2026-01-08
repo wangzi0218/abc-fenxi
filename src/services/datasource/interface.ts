@@ -74,6 +74,32 @@ export interface IDataSource {
   fetchModuleAverages(moduleCode: string): Promise<any>;
 
   /**
+   * 获取省份维度的数据（用于地图展示和省份对比）
+   * @param moduleCode - 模块代码
+   * @param startDate - 开始日期
+   * @param endDate - 结束日期
+   */
+  fetchProvinceData(
+    moduleCode: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<{ province: string; value: number; percentage: number }>>;
+
+  /**
+   * 获取特定省份的时间序列数据（用于热力图趋势）
+   * @param moduleCode - 模块代码
+   * @param province - 省份名称
+   * @param startDate - 开始日期
+   * @param endDate - 结束日期
+   */
+  fetchProvinceTimeSeries(
+    moduleCode: string,
+    province: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<{ date: string; value: number }>>;
+
+  /**
    * 获取模块的所有指标完整响应
    * @param moduleCode - 模块代码
    * @param startDate - 开始日期

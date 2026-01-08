@@ -359,6 +359,37 @@ export class AliyunDataSource implements IDataSource {
   }
   
   /**
+   * 获取省份维度数据
+   */
+  async fetchProvinceData(
+    _moduleCode: string,
+    _startDate: Date,
+    _endDate: Date
+  ): Promise<Array<{ province: string; value: number; percentage: number }>> {
+    /**
+     * TODO: 从阿里云数据源获取省份维度数据
+     */
+    console.warn('[AliyunDataSource] 省份数据查询未实现，返回空数据');
+    return [];
+  }
+  
+  /**
+   * 获取省份时间序列数据
+   */
+  async fetchProvinceTimeSeries(
+    _moduleCode: string,
+    _province: string,
+    _startDate: Date,
+    _endDate: Date
+  ): Promise<Array<{ date: string; value: number }>> {
+    /**
+     * TODO: 从阿里云数据源获取特定省份的时间序列数据
+     */
+    console.warn('[AliyunDataSource] 省份时间序列查询未实现，返回空数据');
+    return [];
+  }
+  
+  /**
    * 将 SLS 查询结果转换为 DailyMetric 格式
    */
   private transformToMetrics(_result: SLSQueryResult, _moduleCode: string): DailyMetric[] {

@@ -33,17 +33,25 @@ function generateMetricsForDate(date: string, moduleCode: string): DailyMetric[]
 
   // 根据模块生成对应的指标
   if (moduleCode === 'photo_inventory') {
-    metrics.push(
-      { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: getRandomInt(150, 300), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '开放门店占比', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: getRandomInt(100, 250), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃门店占比', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '深度门店数', metricDate: date, metricValue: getRandomInt(50, 150), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '平均识别正确率', metricDate: date, metricValue: getRandomInt(80, 99), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '平均商品匹配正确率', metricDate: date, metricValue: getRandomInt(75, 95), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '照片确认转化率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '完成入库转化率', metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'none' }
-    );
+    // 拍单入库指标 - 添加客群维度标记 (为前端过滤做准备)
+    const segments = ['all', 'pharmacy', 'clinic'];
+    segments.forEach(seg => {
+      const suffix = seg === 'all' ? '' : seg === 'pharmacy' ? '-药店' : '-诊所';
+      // 根据客群调整数值
+      const multiplier = seg === 'pharmacy' ? 0.4 : seg === 'clinic' ? 0.6 : 1;
+      
+      metrics.push(
+        { moduleCode, metricName: `开放门店数${suffix}`, metricDate: date, metricValue: Math.round(getRandomInt(150, 300) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `开放门店占比${suffix}`, metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `活跃门店数${suffix}`, metricDate: date, metricValue: Math.round(getRandomInt(100, 250) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `活跃门店占比${suffix}`, metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `深度门店数${suffix}`, metricDate: date, metricValue: Math.round(getRandomInt(50, 150) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `平均识别正确率${suffix}`, metricDate: date, metricValue: seg === 'pharmacy' ? getRandomInt(85, 95) : getRandomInt(80, 99), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `平均商品匹配正确率${suffix}`, metricDate: date, metricValue: seg === 'pharmacy' ? getRandomInt(80, 90) : getRandomInt(75, 95), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `照片确认转化率${suffix}`, metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `完成入库转化率${suffix}`, metricDate: date, metricValue: getRandomPercentage(), metricUnit: '%', dimensionType: 'segment' }
+      );
+    });
   } else if (moduleCode === 'ai_diagnosis') {
     metrics.push(
       { moduleCode, metricName: '日使用诊所数', metricDate: date, metricValue: getRandomInt(200, 400), metricUnit: '个', dimensionType: 'none' },
@@ -160,17 +168,24 @@ function generateStaticMetricsForDate(date: string, moduleCode: string, mockFn: 
 
   const metrics: DailyMetric[] = [];
   if (moduleCode === 'photo_inventory') {
-    metrics.push(
-      { moduleCode, metricName: '开放门店数', metricDate: date, metricValue: Math.round(mockFn(200)), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '开放门店占比', metricDate: date, metricValue: Math.round(mockFn(85)), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃门店数', metricDate: date, metricValue: Math.round(mockFn(180)), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '活跃门店占比', metricDate: date, metricValue: Math.round(mockFn(90)), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '深度门店数', metricDate: date, metricValue: Math.round(mockFn(80)), metricUnit: '个', dimensionType: 'none' },
-      { moduleCode, metricName: '平均识别正确率', metricDate: date, metricValue: Math.round(mockFn(95)), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '平均商品匹配正确率', metricDate: date, metricValue: Math.round(mockFn(88)), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '照片确认转化率', metricDate: date, metricValue: Math.round(mockFn(82)), metricUnit: '%', dimensionType: 'none' },
-      { moduleCode, metricName: '完成入库转化率', metricDate: date, metricValue: Math.round(mockFn(70)), metricUnit: '%', dimensionType: 'none' }
-    );
+    // 拍单入库指标 - 添加客群维度标记 (为前端过滤做准备)
+    const segments = ['all', 'pharmacy', 'clinic'];
+    segments.forEach(seg => {
+      const suffix = seg === 'all' ? '' : seg === 'pharmacy' ? '-药店' : '-诊所';
+      const multiplier = seg === 'pharmacy' ? 0.4 : seg === 'clinic' ? 0.6 : 1;
+      
+      metrics.push(
+        { moduleCode, metricName: `开放门店数${suffix}`, metricDate: date, metricValue: Math.round(mockFn(200) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `开放门店占比${suffix}`, metricDate: date, metricValue: Math.round(mockFn(85)), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `活跃门店数${suffix}`, metricDate: date, metricValue: Math.round(mockFn(180) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `活跃门店占比${suffix}`, metricDate: date, metricValue: Math.round(mockFn(90)), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `深度门店数${suffix}`, metricDate: date, metricValue: Math.round(mockFn(80) * multiplier), metricUnit: '个', dimensionType: 'segment' },
+        { moduleCode, metricName: `平均识别正确率${suffix}`, metricDate: date, metricValue: Math.round(seg === 'pharmacy' ? mockFn(90) : mockFn(95)), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `平均商品匹配正确率${suffix}`, metricDate: date, metricValue: Math.round(seg === 'pharmacy' ? mockFn(85) : mockFn(88)), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `照片确认转化率${suffix}`, metricDate: date, metricValue: Math.round(mockFn(82)), metricUnit: '%', dimensionType: 'segment' },
+        { moduleCode, metricName: `完成入库转化率${suffix}`, metricDate: date, metricValue: Math.round(mockFn(70)), metricUnit: '%', dimensionType: 'segment' }
+      );
+    });
   } else if (moduleCode === 'ai_diagnosis') {
     metrics.push(
       { moduleCode, metricName: '日使用诊所数', metricDate: date, metricValue: Math.round(mockFn(300)), metricUnit: '个', dimensionType: 'none' },
@@ -459,4 +474,87 @@ export function getMockModuleOverview(date: Date) {
   });
 
   return overview;
+}
+
+/**
+ * 省份列表（用于地图展示）
+ */
+const PROVINCES = [
+  '北京', '上海', '广东', '浙江', '江苏', '四川', '湖北', '湖南',
+  '福建', '山东', '云南', '陕西', '重庆', '天津', '河南', '安徽',
+  '江西', '河北', '贵州', '山西', '吉林', '黑龙江', '辽宁', '内蒙古',
+  '新疆', '宁夏', '青海', '西藏', '甘肃', '广西', '海南'
+];
+
+/**
+ * 生成省份维度的统计数据（用于地图展示和省份对比）
+ * @param moduleCode 模块代码
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ * @returns 省份维度的数据
+ */
+export function getMockProvinceData(
+  moduleCode: string,
+  startDate: Date,
+  endDate: Date
+): Array<{ province: string; value: number; percentage: number }> {
+  // 生成随机的省份分布数据
+  // 模拟一线城市数据更多的现象
+  const firstTierCities = new Set(['北京', '上海', '广东', '浙江', '江苏']);
+  
+  const data = PROVINCES.map(province => {
+    const isFirstTier = firstTierCities.has(province);
+    const baseValue = isFirstTier ? getRandomInt(1000, 3000) : getRandomInt(100, 1000);
+    return {
+      province,
+      value: baseValue,
+      percentage: 0 // 后续计算
+    };
+  });
+
+  // 计算百分比
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  data.forEach(d => {
+    d.percentage = Math.round((d.value / total) * 10000) / 100; // 保留两位小数的百分比
+  });
+
+  // 按数值降序排列
+  return data.sort((a, b) => b.value - a.value);
+}
+
+/**
+ * 生成省份维度的时间序列数据（用于热力图趋势）
+ * @param moduleCode 模块代码
+ * @param province 省份名称
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ * @returns 日期-数值对应的数据
+ */
+export function getMockProvinceTimeSeries(
+  moduleCode: string,
+  province: string,
+  startDate: Date,
+  endDate: Date
+): Array<{ date: string; value: number }> {
+  const data: Array<{ date: string; value: number }> = [];
+  let current = dayjs(startDate);
+  const end = dayjs(endDate);
+
+  // 一线城市的基础值更高
+  const firstTierCities = new Set(['北京', '上海', '广东', '浙江', '江苏']);
+  const isFirstTier = firstTierCities.has(province);
+  const baseValue = isFirstTier ? 1500 : 500;
+
+  while (!current.isAfter(end)) {
+    const dateStr = current.format('YYYY-MM-DD');
+    const dayDiff = current.diff(dayjs('2024-01-01'), 'day');
+    // 模拟波动的数据
+    const noise = Math.sin(dayDiff * 0.3 + Math.random() * 2) * (baseValue * 0.2);
+    const value = Math.max(0, Math.round(baseValue + noise));
+    
+    data.push({ date: dateStr, value });
+    current = current.add(1, 'day');
+  }
+
+  return data;
 }

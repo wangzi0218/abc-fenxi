@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDashboardStore } from './stores/dashboardStore';
 import { MODULES, MODULE_LIST } from './types';
-import { Card, Button, Tabs } from './components/ui';
-import { fetchMetrics, fetchFunnel, fetchModuleAverages } from './services/api';
+import { Card, Tabs } from './components/ui';
+import { fetchMetrics, fetchFunnel, fetchModuleAverages, fetchProvinceData } from './services/api';
 import { Loading, EmptyState, Badge } from './components/ui';
 import { TrendChart, ComparisonChart } from './components/Charts';
+import { MetricsTimePivotTable } from './components/MetricsTimePivotTable';
 import { getMockInsights, getPredictiveMetrics } from './services/mockData';
 import dayjs from 'dayjs';
 
@@ -27,16 +28,43 @@ function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [comparisonResults, setComparisonResults] = useState<any[]>([]);
   const [averages, setAverages] = useState<any>(null);
-  const [isDemoMode, setIsDemoMode] = useState(true);
   const [secondaryChartMetric, setSecondaryChartMetric] = useState<string>('');
   const [insights, setInsights] = useState<string[]>([]);
   const [tableSearch, setTableSearch] = useState('');
+  const [selectedSegment, setSelectedSegment] = useState<'all' | 'pharmacy' | 'clinic'>('all'); // 拍单入库的客群筛选
+  const [provinceData, setProvinceData] = useState<any[]>([]); // 省份维度数据
+  const [selectedPivotMetric, setSelectedPivotMetric] = useState<string>(''); // 透视表选中指标
+
+  // 演示模式常量（后续可配置化）
+  const isDemoMode = true;
 
   // 获取当前模块的所有指标名称
-  const metricNames = Array.from(new Set(metrics.map(m => m.metricName)));
+  // 对拍单入库模块，根据客群筛选过滤
+  let displayMetrics = metrics;
+  if (selectedModule === 'photo_inventory') {
+    // 拍单入库模块根据客群筛选过滤
+    const segmentSuffix = selectedSegment === 'all' ? '' : selectedSegment === 'pharmacy' ? '-药店' : '-诊所';
+    displayMetrics = metrics.filter(m => {
+      // 仅可以显示当前客群的指标
+      if (selectedSegment === 'all') {
+        // 展示三个客群的指标
+        return m.metricName.includes('-') === false || m.metricName.includes('-药店') || m.metricName.includes('-诊所');
+      } else {
+        // 仅显示选中客群的指标
+        return m.metricName.endsWith(segmentSuffix);
+      }
+    });
+    // 转换指标名称，去掉客群后缀，为了在控件中正常显示
+    displayMetrics = displayMetrics.map(m => ({
+      ...m,
+      metricName: m.metricName.replace(/-药店$|-诊所$/, '')
+    }));
+  }
+  
+  const metricNames = Array.from(new Set(displayMetrics.map(m => m.metricName)));
 
   // 为图表过滤数据
-  const rawChartData = metrics
+  const rawChartData = displayMetrics
     .filter(m => m.metricName === (selectedChartMetric || metricNames[0]))
     .sort((a, b) => dayjs(a.metricDate).unix() - dayjs(b.metricDate).unix());
 
@@ -80,10 +108,14 @@ function DashboardPage() {
         }
       }
 
-      // 获取漏斗数据
+      // 获取漯斗数据
       const funnelResp = await fetchFunnel(selectedModule, dateRange.startDate, dateRange.endDate);
       setFunnel(funnelResp.data);
-
+      
+      // 获取省份维度数据（为地图渲染告稆准备）
+      const provinceResp = await fetchProvinceData(selectedModule, dateRange.startDate, dateRange.endDate);
+      setProvinceData(provinceResp.data);
+      
       // 如果在对比页，加载对比数据
       if (activeTab === 'comparison') {
         loadComparisonData();
@@ -145,7 +177,7 @@ function DashboardPage() {
   // 初始加载及依赖加载
   useEffect(() => {
     loadData();
-  }, [selectedModule, viewMode, dateRange, isDemoMode]);
+  }, [selectedModule, viewMode, dateRange]);
 
   const module = MODULES[selectedModule];
 
@@ -162,25 +194,6 @@ function DashboardPage() {
           </div>
           
           <div className="flex flex-wrap items-center gap-4">
-            {/* 模块切换 */}
-            <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl shadow-inner">
-              {MODULE_LIST.map((m) => (
-                <button
-                  key={m.code}
-                  onClick={() => setSelectedModule(m.code)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    selectedModule === m.code
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {m.name}
-                </button>
-              ))}
-            </div>
-
-            <div className="h-6 w-px bg-gray-300 hidden md:block" />
-
             {/* 时间控制 */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -233,36 +246,66 @@ function DashboardPage() {
 
             <div className="h-6 w-px bg-gray-300 hidden md:block" />
 
-            {/* 功能操作 */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-500">演示模式</span>
-                <button
-                  onClick={() => setIsDemoMode(!isDemoMode)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none ${
-                    isDemoMode ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-200 ${
-                      isDemoMode ? 'translate-x-5' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
+              {/* 功能操作 - 导出和其他操作将移到具体卡片内 */}
+              <div className="flex items-center gap-3">
+                {/* 预留位置供后续功能使用 */}
               </div>
-              <Button size="sm" variant="outline" onClick={() => {
-                const csvContent = "data:text/csv;charset=utf-8," 
-                  + "指标名称,日期,数值,单位\n"
-                  + metrics.map(m => `${m.metricName},${m.metricDate},${m.metricValue},${m.metricUnit}`).join("\n");
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `${selectedModule}_metrics.csv`);
-                document.body.appendChild(link);
-                link.click();
-              }}>导出报表</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 二级导航栏 - 模块选择 + 维度筛选 */}
+      <div className="sticky top-[72px] z-40 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          {/* 第一行：模块导航 */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-gray-400 uppercase">模块</span>
+            <div className="flex items-center gap-0.5">
+              {MODULE_LIST.map((m, idx) => (
+                <div key={m.code} className="flex items-center">
+                  <button
+                    onClick={() => setSelectedModule(m.code)}
+                    className={`px-2.5 py-1.5 text-sm transition-all font-medium ${
+                      selectedModule === m.code
+                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {m.name}
+                  </button>
+                  {idx < MODULE_LIST.length - 1 && <span className="text-gray-300 mx-0.5">/</span>}
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* 第二行：维度筛选 - 仅拍单入库显示 */}
+          {selectedModule === 'photo_inventory' && (
+            <div className="mt-3 pt-3 flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase">客群</span>
+              <div className="flex items-center gap-0.5">
+                {[
+                  { value: 'all', label: '全部' },
+                  { value: 'pharmacy', label: '药店' },
+                  { value: 'clinic', label: '诊所' }
+                ].map((seg, idx, arr) => (
+                  <div key={seg.value} className="flex items-center">
+                    <button
+                      onClick={() => setSelectedSegment(seg.value as any)}
+                      className={`px-2.5 py-1.5 text-sm transition-all font-medium ${
+                        selectedSegment === seg.value
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {seg.label}
+                    </button>
+                    {idx < arr.length - 1 && <span className="text-gray-300 mx-0.5">|</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -327,7 +370,39 @@ function DashboardPage() {
                 </Card>
 
                 {/* 2. 核心看板：全局 & 最新视野 - 优化为紧凑表格型布局 */}
-                <Card title="核心指标多维实时观测" className="mb-6">
+                <Card 
+                  title="核心指标多维实时观测" 
+                  className="mb-6"
+                  headerExtra={
+                    <button
+                      onClick={() => {
+                        const csvHeader = ['指标名称', '最新观测值', '周期平均', '周期峰值', '周期谷值', '单位'].join(',');
+                        const csvData = metricNames.map((name) => {
+                          const metricData = displayMetrics.filter(m => m.metricName === name);
+                          const latest = [...metricData].sort((a, b) => dayjs(b.metricDate).unix() - dayjs(a.metricDate).unix())[0];
+                          const values = metricData.map(m => m.metricValue);
+                          const avg = values.reduce((a, b) => a + b, 0) / (values.length || 1);
+                          const max = Math.max(...values);
+                          const min = Math.min(...values);
+                          const unit = latest?.metricUnit || '';
+                          return [name, latest?.metricValue.toFixed(unit === '%' ? 1 : 0), avg.toFixed(unit === '%' ? 1 : 0), max.toFixed(unit === '%' ? 1 : 0), min.toFixed(unit === '%' ? 1 : 0), unit].join(',');
+                        }).join('\n');
+                        
+                        const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent([csvHeader, csvData].join('\n'));
+                        const link = document.createElement('a');
+                        link.setAttribute('href', csvContent);
+                        link.setAttribute('download', `${selectedModule}_core_metrics_${dayjs(dateRange.startDate).format('YYYYMMDD')}_${dayjs(dateRange.endDate).format('YYYYMMDD')}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 16v-4m0 0V8m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <span>导出</span>
+                    </button>
+                  }
+                >
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
@@ -342,7 +417,7 @@ function DashboardPage() {
                       </thead>
                       <tbody className="divide-y divide-gray-50">
                         {metricNames.map((name) => {
-                          const metricData = metrics.filter(m => m.metricName === name);
+                          const metricData = displayMetrics.filter(m => m.metricName === name);
                           const latest = [...metricData].sort((a, b) => dayjs(b.metricDate).unix() - dayjs(a.metricDate).unix())[0];
                           const values = metricData.map(m => m.metricValue);
                           const avg = values.reduce((a, b) => a + b, 0) / (values.length || 1);
@@ -389,6 +464,99 @@ function DashboardPage() {
                     </table>
                   </div>
                 </Card>
+
+                {/* 2.5 省份分布展示 */}
+                {provinceData.length > 0 && (
+                  <Card title="省份使用分布与对标分析" className="mb-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* 左侧：省份排行表 */}
+                      <div className="lg:col-span-1 max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <div className="space-y-2">
+                          {provinceData.slice(0, 10).map((prov, idx) => (
+                            <div key={prov.province} className="p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors group">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-gray-400 text-xs w-6">#{idx + 1}</span>
+                                  <span className="font-bold text-gray-900 text-sm">{prov.province}</span>
+                                </div>
+                                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded group-hover:bg-blue-100 transition-colors">
+                                  {prov.percentage}%
+                                </span>
+                              </div>
+                              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300" 
+                                  style={{ width: `${prov.percentage}%` }} 
+                                />
+                              </div>
+                              <div className="text-[10px] text-gray-400 mt-1 font-medium">
+                                {prov.value.toLocaleString()} 使用次数
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* 右侧：统计卡片 + TOP 5 柱状图 */}
+                      <div className="lg:col-span-2">
+                        <div className="space-y-4">
+                          {/* 统计概览卡片 */}
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                              <p className="text-[10px] font-bold text-blue-600 uppercase mb-2">覆盖省份</p>
+                              <p className="text-3xl font-black text-blue-900">{provinceData.length}</p>
+                              <p className="text-[10px] text-blue-600 mt-1">个省份</p>
+                            </div>
+                            <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                              <p className="text-[10px] font-bold text-purple-600 uppercase mb-2">总使用次数</p>
+                              <p className="text-3xl font-black text-purple-900">
+                                {(provinceData.reduce((sum: number, p: any) => sum + p.value, 0) / 1000).toFixed(1)}
+                              </p>
+                              <p className="text-[10px] text-purple-600 mt-1">千次</p>
+                            </div>
+                            <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+                              <p className="text-[10px] font-bold text-green-600 uppercase mb-2">人均使用</p>
+                              <p className="text-3xl font-black text-green-900">
+                                {(provinceData.reduce((sum: number, p: any) => sum + p.value, 0) / provinceData.length).toFixed(0)}
+                              </p>
+                              <p className="text-[10px] text-green-600 mt-1">次/省</p>
+                            </div>
+                          </div>
+
+                          {/* TOP 5 柱状图 */}
+                          <div className="p-4 bg-gray-50/50 rounded-xl border border-gray-200">
+                            <h4 className="text-sm font-bold text-gray-900 mb-4">TOP 5 省份排行</h4>
+                            <div className="space-y-3">
+                              {provinceData.slice(0, 5).map((prov, idx) => {
+                                const maxValue = provinceData[0].value;
+                                const barWidth = (prov.value / maxValue) * 100;
+                                return (
+                                  <div key={prov.province}>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-xs font-bold text-gray-700 w-12">{prov.province}</span>
+                                      <span className="text-xs font-bold text-gray-900">{prov.value.toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 h-3 rounded overflow-hidden">
+                                      <div 
+                                        className={`h-full transition-all duration-500 ${
+                                          idx === 0 ? 'bg-blue-600' : 
+                                          idx === 1 ? 'bg-blue-500' : 
+                                          idx === 2 ? 'bg-blue-400' :
+                                          idx === 3 ? 'bg-blue-300' : 'bg-blue-200'
+                                        }`}
+                                        style={{ width: `${barWidth}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                )}
 
                 {/* 3. 详情钻取与趋势图 */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
@@ -500,7 +668,7 @@ function DashboardPage() {
                     </Card>
                   )}
 
-                  {/* 4. 指标明细全量列表 */}
+                  {/* 4. 指标明细全量数据透视表 */}
                   <Card 
                     title={`${module.name} 指标明细全量历史回溯 (${dayjs(dateRange.startDate).format('MM.DD')} - ${dayjs(dateRange.endDate).format('MM.DD')})`}
                     headerExtra={
@@ -516,35 +684,14 @@ function DashboardPage() {
                       </div>
                     }
                   >
-                    <div className="overflow-x-auto max-h-[400px] custom-scrollbar">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-200 sticky top-0 bg-white z-10">
-                            <th className="text-left py-3 px-6 font-bold text-gray-400 uppercase tracking-wider">统计日期</th>
-                            <th className="text-left py-3 px-6 font-bold text-gray-400 uppercase tracking-wider">指标名称</th>
-                            <th className="text-right py-3 px-6 font-bold text-gray-400 uppercase tracking-wider">观测数值</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                          {metrics
-                            .filter(m => 
-                              m.metricName.includes(tableSearch) || 
-                              m.metricDate.includes(tableSearch)
-                            )
-                            .sort((a,b) => dayjs(b.metricDate).unix() - dayjs(a.metricDate).unix())
-                            .map((metric, idx) => (
-                              <tr key={idx} className={`hover:bg-blue-50/50 transition-colors ${selectedChartMetric === metric.metricName ? 'bg-blue-50/30' : ''}`}>
-                                <td className="py-3 px-6 font-medium text-gray-500">{metric.metricDate}</td>
-                                <td className="py-3 px-6 font-bold text-gray-900">{metric.metricName}</td>
-                                <td className="py-3 px-6 text-right font-black">
-                                  {metric.metricValue.toFixed(metric.metricUnit === '%' ? 1 : 0)}
-                                  <span className="ml-1 text-[10px] font-normal text-gray-400">{metric.metricUnit}</span>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
+                    <MetricsTimePivotTable 
+                      metrics={displayMetrics.filter(m => 
+                        m.metricName.includes(tableSearch) || 
+                        m.metricDate.includes(tableSearch)
+                      )}
+                      selectedMetric={selectedPivotMetric}
+                      onMetricSelect={setSelectedPivotMetric}
+                    />
                   </Card>
                 </div>
             ) : (

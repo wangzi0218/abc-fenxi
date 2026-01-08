@@ -13,6 +13,8 @@ import {
   getMockModuleAverages,
   getMockInsights,
   getPredictiveMetrics,
+  getMockProvinceData,
+  getMockProvinceTimeSeries,
 } from '../mockData';
 
 /**
@@ -104,6 +106,31 @@ export class MockDataSource implements IDataSource {
   async fetchModuleAverages(moduleCode: string): Promise<any> {
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
     return getMockModuleAverages(moduleCode);
+  }
+
+  /**
+   * 获取省份维度的数据（用于地图展示和省份对比）
+   */
+  async fetchProvinceData(
+    moduleCode: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<{ province: string; value: number; percentage: number }>> {
+    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+    return getMockProvinceData(moduleCode, startDate, endDate);
+  }
+
+  /**
+   * 获取特定省份的时间序列数据（用于热力图趋势）
+   */
+  async fetchProvinceTimeSeries(
+    moduleCode: string,
+    province: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<{ date: string; value: number }>> {
+    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+    return getMockProvinceTimeSeries(moduleCode, province, startDate, endDate);
   }
 
   /**
